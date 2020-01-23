@@ -48,10 +48,6 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("abc.def@mail"));
         assertFalse(BankAccount.isEmailValid("abc.def@mail..com"));
 
-
-
-
-
     }
 
     @Test

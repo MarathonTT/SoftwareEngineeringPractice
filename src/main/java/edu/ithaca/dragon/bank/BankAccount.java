@@ -38,7 +38,7 @@ public class BankAccount {
     }
 
     /**
-     * returns true if character is valid for email input
+     * returns true if email follows correct conventions.
      */
 
     public static boolean isEmailValid(String email) {
@@ -82,9 +82,7 @@ public class BankAccount {
         return true;
     }
 
-    private static boolean isSpecialChar(char c) {
-        return c == '.' || c == '-' || c == '_' || c == '@';
-    }
+    private static boolean isSpecialChar(char c) { return c == '.' || c == '-' || c == '_' || c == '@'; }
 
     private static ArrayList<Character> getValidCharArr(){
         ArrayList<Character> validCharArr = new ArrayList<Character>();
@@ -154,6 +152,7 @@ public class BankAccount {
         validCharArr.add('8');
         validCharArr.add('9');
         validCharArr.add('0');
+
         return validCharArr;
     }
 }
