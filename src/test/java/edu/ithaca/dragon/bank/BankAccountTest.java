@@ -13,7 +13,11 @@ class BankAccountTest {
 
         assertEquals(200, bankAccount.getBalance());
     }
-
+    /*
+    This is a 1 case equivalence class because it is only testing if the amount withdrawn is equal to one
+    correct condition (100). This is a border case because if the number being tested is 99 or 101 it will throw
+    a boundary error.
+     */
     @Test
     void withdrawTest() {
         BankAccount bankAccount = new BankAccount("a@b.com", 200);
@@ -21,6 +25,17 @@ class BankAccountTest {
 
         assertEquals(100, bankAccount.getBalance());
     }
+
+    /*
+       This isn't missing equivalence cases or boundaries because if someone withdraws $100 the bank should only
+       send $100. That number can be edited.
+     */
+
+//     --------------------------------------------------------------------------------------------------
+    /*This is a 21 case equivalence class where if one condition fails the whole partition is invalid.
+      There are no boundary values because we are not dealing with numbers so there is no getting close to a limit
+      it either breaks the rules for a valid email or passes.
+     */
 
     @Test
     void isEmailValidTest(){
@@ -50,6 +65,11 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("abc.def@mail..com"));
 
     }
+
+    /*This is missing the equivalence cases of double dashes and underscores. It also doesnt test for every
+      special characters.
+     */
+
 
     @Test
     void constructorTest() {
