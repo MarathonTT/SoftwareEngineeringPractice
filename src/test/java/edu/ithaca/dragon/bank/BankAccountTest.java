@@ -55,14 +55,17 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("ab@j.c"));
         assertFalse(BankAccount.isEmailValid("ab@domain.c"));
         assertFalse(BankAccount.isEmailValid("ab.com@j"));
+        assertFalse(BankAccount.isEmailValid("ab#c#domain.com"));
         assertFalse(BankAccount.isEmailValid("abc-@mail.com"));
         assertFalse(BankAccount.isEmailValid("abc..def@mail.com"));
         assertFalse(BankAccount.isEmailValid(".abc@mail.com"));
-        assertFalse(BankAccount.isEmailValid("abc#def@mail.com"));
+        assertFalse(BankAccount.isEmailValid("abc$def@mail.com"));
         assertFalse(BankAccount.isEmailValid("abc.def@mail.c"));
         assertFalse(BankAccount.isEmailValid("abc.def@mail#archive.com"));
         assertFalse(BankAccount.isEmailValid("abc.def@mail"));
         assertFalse(BankAccount.isEmailValid("abc.def@mail..com"));
+        assertFalse(BankAccount.isEmailValid("abc@def.co-"));
+
 
     }
 
