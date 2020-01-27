@@ -12,11 +12,11 @@ class BankAccountTest {
         BankAccount bankAccount = new BankAccount("a@b.com", Double.MAX_VALUE);
         assertEquals(Double.MAX_VALUE, bankAccount.getBalance());
 
-        BankAccount bankAccount = new BankAccount("a@b.com", Double.MAX_VALUE);
-        assertEquals(Double.MAX_VALUE, bankAccount.getBalance());
+        BankAccount bankAccount1 = new BankAccount("a@b.com", Double.MAX_VALUE);
+        assertEquals(Double.MAX_VALUE, bankAccount1.getBalance());
 
-        BankAccount bankAccount = new BankAccount("a@b.com", 0);
-        assertEquals(0, bankAccount.getBalance());
+        BankAccount bankAccount2 = new BankAccount("a@b.com", 0);
+        assertEquals(0, bankAccount2.getBalance());
 
 
     }
