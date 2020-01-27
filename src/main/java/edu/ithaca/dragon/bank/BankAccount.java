@@ -32,6 +32,8 @@ public class BankAccount {
 
     /**
      * @post reduces the balance by amount if amount is non-negative and smaller than balance
+     * if they withdraw less than or equal to 0 throw an illegal argument exception
+     * if they withdraw more than their balance, throw an IllegalArgumentException
      */
     public void withdraw (double amount)  {
         balance -= amount;
