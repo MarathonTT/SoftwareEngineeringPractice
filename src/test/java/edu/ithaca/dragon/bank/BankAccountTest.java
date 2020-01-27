@@ -26,7 +26,7 @@ class BankAccountTest {
     a boundary error.
      */
     @Test
-    void withdrawTest() {
+    void withdrawTest() throws InsufficientFundsException{
         //middle of partition
         BankAccount bankAccount1 = new BankAccount("a@b.com", 200);
         bankAccount1.withdraw(100);
@@ -37,14 +37,25 @@ class BankAccountTest {
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(bankAccount1.getBalance()+Double.MIN_VALUE));
 
         //0 edge case with 0 balance
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(0));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.01));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.000001));
+
         bankAccount1.withdraw(100);
         assertEquals(0, bankAccount1.getBalance());
 
         //Double max value testing and edge cases
-        BankAccount bankAccount2 = new BankAccount("a@cc.com", Double.MAX_VALUE);
-        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(bankAccount1.getBalance()+Double.MIN_VALUE));
+        BankAccount bankAccount2 = new BankAccount("a@cc.com", Math.round(Double.MAX_VALUE));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(bankAccount1.getBalance()+.01));
         bankAccount2.withdraw(Double.MAX_VALUE);
         assertEquals(0, bankAccount2.getBalance());
+
+        //testing illegal argument exception
+        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(0));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(-.01));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(-.000001));
+
+
     }
 
     /*
