@@ -2,6 +2,7 @@ package edu.ithaca.dragon.bank;
 
 import javax.print.DocFlavor;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BankAccount {
 
@@ -13,13 +14,12 @@ public class BankAccount {
      */
     public BankAccount(String email, double startingBalance){
 
-        if (isEmailValid(email)){
-            this.email = email;
-            this.balance = startingBalance;
-        }
-        else {
-            throw new IllegalArgumentException("Email address: " + email + " is invalid, cannot create account");
-        }
+        if (isEmailValid(email)) this.email = email;
+        else throw new IllegalArgumentException("Email address: " + email + " is invalid, cannot create account");
+
+        if (Math.round(startingBalance * 100.0) /100.0 == startingBalance)  this.balance = startingBalance;
+        else throw new IllegalArgumentException("Invalid starting balance");
+
     }
 
     public double getBalance(){
@@ -35,8 +35,11 @@ public class BankAccount {
      * if they withdraw less than or equal to 0 throw an illegal argument exception
      * if they withdraw more than their balance, throw an IllegalArgumentException
      */
-    public void withdraw (double amount)  {
-        balance -= amount;
+    public void withdraw (double amount) throws InsufficientFundsException {
+        if (amount <= 0) throw new IllegalArgumentException("Cannot withdraw 0 or less.");
+        if (amount != Math.round(amount * 100.0) / 100.0) throw new IllegalArgumentException("Cannot withdraw amounts with more than .01 precision");
+        if (balance >= amount) balance -= amount;
+        else throw new InsufficientFundsException("Cannot draw more than account balance.");
     }
 
     /**
@@ -45,138 +48,114 @@ public class BankAccount {
 
     public static boolean isEmailValid(String email) {
 
+        //Checks that there is only 1 @.
+        int atIdx = email.indexOf('@');
+        int lastAtIdx = email.lastIndexOf('@');
+        if (atIdx != lastAtIdx || atIdx == -1) return false;
 
-            //declares a variable with the locations of the @ signs in the email.
-            int atSign = email.indexOf('@');
-            int lastAtSign = email.lastIndexOf('@');
+        //Checks that there is a period in the one of two spots it must be in the domain.
+        //Note that there can only be 2 or 3 characters after the last period in the domain.
+        int len = email.length();
+        int lastPeriodIdx = email.lastIndexOf('.');
+        if (lastPeriodIdx == -1) return false;
+        if (lastPeriodIdx != len - 3 && lastPeriodIdx != len - 4) return false;
 
+        //Checks that the @ is before the last period.
+        if (atIdx>lastPeriodIdx) return false;
 
+        //Checks that all characters are valid and that the email obeys the letter after special rule.
+        int i = len - 1;
+        HashSet<Character> validCharSet = getValidCharSet();
+        while (i > -1) { //going through each character in the email
 
-            //makes sure that an @ sign is in the email.
-            if (atSign == -1)
-                return false;
+            //if invalid character return false
+            if (!validCharSet.contains(email.charAt(i))) return false;
 
-
-
-            //makes sure that there is only one @ sign.
-            if (atSign != lastAtSign)
-                return false;
-
-
-
-            //Makes sure that a special character is not followed by a "@"
-            if (email.charAt(lastAtSign-1) == '.')
-                return false;
-
-
-
-            if (email.charAt(lastAtSign-1) == '_')
-                return false;
-
-
-
-            if (email.charAt(lastAtSign-1) == '-')
-                return false;
-
-
-
-
-
-
-
-
-
-
-            //declares a variable with the location of the last "." in the email
-            int lastPeriodSign = email.lastIndexOf('.');
-
-
-
-            //makes sure that there is a '.' in the email.
-            if (lastPeriodSign == -1)
-                return false;
-
-
-
-            //makes sure that there is a period after @
-            if (email.charAt(lastAtSign) < email.charAt(lastPeriodSign))
-                return false;
-
-
-
-
-
-
-
-            //makes sure that there is not two periods, dashes, or underscores back to back in the email
-            int x = 0;
-            int lengthOfEmail = email.length();
-
-            int locationOfLastPeriod = -1000;
-            int locationOfCurrentPeriod;
-
-            int locationOfLastDash = -2;
-            int locationOfCurrentDash;
-
-            int locationOfLastUnderscore = -2;
-            int locationOfCurrentUnderscore;
-
-            //makes sure the period follows a .com or .cc or .org or .edu etc...
-            if (lastPeriodSign != lengthOfEmail - 3 && lastPeriodSign != lengthOfEmail - 4)
-                return false;
-
-
-
-
-            while (x < (email.length()-1)){
-
-                //checks to make sure the email does not start with a period
-                if(email.charAt(x) == '.' && x == 0)
-                    return false;
-                //checks for double periods
-                if (email.charAt(x) =='.' && x == (locationOfLastPeriod+1))
-                    return false;
-                if(email.charAt(x) =='.')
-                    locationOfLastPeriod = x;
-
-                //checks for double underscores
-                if(email.charAt(x) == '_' && x == 0)
-                    return false;
-                if (email.charAt(x) == locationOfLastUnderscore)
-                    return false;
-                else if(email.charAt(x) =='_')
-                    locationOfLastUnderscore = x;
-
-                //checks for double dashes
-                if(email.charAt(x) == '-' && x == 0)
-                    return false;
-                if (email.charAt(x) == locationOfLastDash)
-                    return false;
-                else if(email.charAt(x) =='-')
-                    locationOfLastDash = x;
-
-                x++;
+            //if special character, make sure following character is not special
+            if (isSpecialChar(email.charAt(i))){
+                //if leading or last character is special, return false
+                if (i == 0 || i == len - 1) return false;
+                //if the next character is also special return false
+                if (isSpecialChar(email.charAt(i + 1))) return false;
             }
+            //go back one letter
+            i--;
+        }
+        //if no invalid characters found or special rules broken, return true
+        return true;
+    }
 
+    private static boolean isSpecialChar(char c) { return c == '.' || c == '-' || c == '_' || c == '@'; }
 
+    private static HashSet<Character> getValidCharSet(){
+        HashSet<Character> validCharSet = new HashSet<>();
+        validCharSet.add('@');
+        validCharSet.add('.');
+        validCharSet.add('_');
+        validCharSet.add('-');
+        validCharSet.add('q');
+        validCharSet.add('w');
+        validCharSet.add('e');
+        validCharSet.add('r');
+        validCharSet.add('t');
+        validCharSet.add('y');
+        validCharSet.add('u');
+        validCharSet.add('i');
+        validCharSet.add('o');
+        validCharSet.add('p');
+        validCharSet.add('a');
+        validCharSet.add('s');
+        validCharSet.add('d');
+        validCharSet.add('f');
+        validCharSet.add('g');
+        validCharSet.add('h');
+        validCharSet.add('j');
+        validCharSet.add('k');
+        validCharSet.add('l');
+        validCharSet.add('z');
+        validCharSet.add('x');
+        validCharSet.add('c');
+        validCharSet.add('v');
+        validCharSet.add('b');
+        validCharSet.add('n');
+        validCharSet.add('m');
+        validCharSet.add('Q');
+        validCharSet.add('W');
+        validCharSet.add('E');
+        validCharSet.add('R');
+        validCharSet.add('T');
+        validCharSet.add('Y');
+        validCharSet.add('U');
+        validCharSet.add('I');
+        validCharSet.add('O');
+        validCharSet.add('P');
+        validCharSet.add('A');
+        validCharSet.add('S');
+        validCharSet.add('D');
+        validCharSet.add('F');
+        validCharSet.add('G');
+        validCharSet.add('H');
+        validCharSet.add('J');
+        validCharSet.add('K');
+        validCharSet.add('L');
+        validCharSet.add('Z');
+        validCharSet.add('X');
+        validCharSet.add('C');
+        validCharSet.add('V');
+        validCharSet.add('B');
+        validCharSet.add('N');
+        validCharSet.add('M');
+        validCharSet.add('1');
+        validCharSet.add('2');
+        validCharSet.add('3');
+        validCharSet.add('4');
+        validCharSet.add('5');
+        validCharSet.add('6');
+        validCharSet.add('7');
+        validCharSet.add('8');
+        validCharSet.add('9');
+        validCharSet.add('0');
 
-            //makes sure there is not a #
-            x = 0;
-            while (x < (email.length()-1)){
-                if (email.charAt(x) == '#')
-                    return false;
-                x++;
-            }
-
-            return true;
-
-
-
-
-
-
-
-
-
+        return validCharSet;
     }
 }

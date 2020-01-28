@@ -3,21 +3,16 @@ package edu.ithaca.dragon.bank;
 
 import org.junit.jupiter.api.Test;
 
+import javax.imageio.stream.ImageInputStreamImpl;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class BankAccountTest {
 
     @Test
     void getBalanceTest() {
-        BankAccount bankAccount = new BankAccount("a@b.com", Double.MAX_VALUE);
-        assertEquals(Double.MAX_VALUE, bankAccount.getBalance());
-
-        BankAccount bankAccount1 = new BankAccount("a@b.com", Double.MAX_VALUE);
-        assertEquals(Double.MAX_VALUE, bankAccount1.getBalance());
-
         BankAccount bankAccount2 = new BankAccount("a@b.com", 0);
         assertEquals(0, bankAccount2.getBalance());
-
 
     }
     /*
@@ -34,28 +29,23 @@ class BankAccountTest {
 
         //0 edge case with positive balance
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(0));
-        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(bankAccount1.getBalance()+Double.MIN_VALUE));
-
-        //0 edge case with 0 balance
-        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(0));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.01));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.000001));
 
+        //0 edge case with 0 balance
         bankAccount1.withdraw(100);
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(0));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.01));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.000001));
         assertEquals(0, bankAccount1.getBalance());
 
-        //Double max value testing and edge cases
-        BankAccount bankAccount2 = new BankAccount("a@cc.com", Math.round(Double.MAX_VALUE));
-        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(bankAccount1.getBalance()+.01));
-        bankAccount2.withdraw(Double.MAX_VALUE);
-        assertEquals(0, bankAccount2.getBalance());
+        //testing InsufficientFundsException
+        BankAccount bankAccount2 = new BankAccount("a@b.com", 5);
+        assertThrows(InsufficientFundsException.class, () -> bankAccount2.withdraw(10));
 
-        //testing illegal argument exception
-        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(0));
-        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(-.01));
-        assertThrows(IllegalArgumentException.class, () -> bankAccount2.withdraw(-.000001));
-
-
+        bankAccount2.withdraw(5);
+        assertThrows(InsufficientFundsException.class, () -> bankAccount2.withdraw(.01));
+        assertThrows(InsufficientFundsException.class, () -> bankAccount2.withdraw(10));
     }
 
     /*
@@ -81,6 +71,7 @@ class BankAccountTest {
         assertTrue(BankAccount.isEmailValid("abc.def@mail.org"));
         assertTrue(BankAccount.isEmailValid("abc.def@mail.com"));
         assertTrue(BankAccount.isEmailValid("abc.def@mail.archive.com"));
+        assertTrue(BankAccount.isEmailValid("a@cc.com"));
 
         assertFalse(BankAccount.isEmailValid("a@b")); //no period
         assertFalse(BankAccount.isEmailValid("ab.com@j")); //domain missing period
@@ -98,7 +89,6 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("abc@def.co-")); //ending in special chaaracter
         assertFalse(BankAccount.isEmailValid("abc.b@c")); //@ on wrong side of last period
 
-
     }
 
     /*This is missing the equivalence cases of double dashes and underscores. It also doesnt test for every
@@ -112,8 +102,15 @@ class BankAccountTest {
 
         assertEquals("a@b.com", bankAccount.getEmail());
         assertEquals(200, bankAccount.getBalance());
+
+        BankAccount bankAccount1 = new BankAccount("a@b.com", 0);
+
         //check for exception thrown correctly
         assertThrows(IllegalArgumentException.class, ()-> new BankAccount("", 100));
+        assertThrows(IllegalArgumentException.class, ()-> new BankAccount("ab@google.com", -100));
+        assertThrows(IllegalArgumentException.class, ()-> new BankAccount("ab@google.com", -.001));
+        assertThrows(IllegalArgumentException.class, ()-> new BankAccount("ab@google.com", 100.001));
+        assertThrows(IllegalArgumentException.class, ()-> new BankAccount("ab@google.com", .001));
     }
 
 }
