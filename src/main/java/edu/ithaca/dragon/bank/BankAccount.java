@@ -32,6 +32,11 @@ public class BankAccount {
         return email;
     }
 
+    public static boolean isAmountValid(double amount){
+        if (amount <= 0 || Math.round(amount * 100.0) / 100.0 != amount) return false;
+        else return true;
+    }
+
     /**
      * @post reduces the balance by amount if amount is non-negative and smaller than balance
      * if they withdraw less than or equal to 0 throw an illegal argument exception
@@ -39,10 +44,7 @@ public class BankAccount {
      */
     public void withdraw (double amount) throws InsufficientFundsException {
 
-        if (amount != Math.round(amount * 100.0) / 100.0) {
-            throw new IllegalArgumentException("Cannot withdraw amounts with more than .01 precision");
-        }
-        if (amount <= 0) throw new IllegalArgumentException("Cannot withdraw 0 or less.");
+        if (!isAmountValid(amount)) throw new IllegalArgumentException("Invalid amount to withdraw.");
         if (balance >= amount) balance -= amount;
         else throw new InsufficientFundsException("Cannot draw more than account balance.");
     }
@@ -71,9 +73,8 @@ public class BankAccount {
         //Gets a hashset with all the valid characters for character validation.
         HashSet<Character> validCharSet = getValidCharSet();
 
-        //The for loop checks that all characters are valid and
-        // that the email obeys the letter after special rule,
-        // and the no leading or ending special character rule.
+        //The for loop checks that all characters are valid and that the email obeys the
+        // letter after special rule, and the no leading or ending special character rule.
         for (int i = len - 1; i > -1; i--){
 
             //if invalid character return false

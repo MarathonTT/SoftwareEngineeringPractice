@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.imageio.stream.ImageInputStreamImpl;
 
+import static edu.ithaca.dragon.bank.BankAccount.isAmountValid;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BankAccountTest {
@@ -100,6 +101,30 @@ class BankAccountTest {
       special characters.
      */
 
+    @Test
+    void isAmountValidTest() {
+        //testing valid values with and without valid decimal places
+        assertTrue(isAmountValid(9679756476693.89));
+        assertTrue(isAmountValid(100));
+        assertTrue(isAmountValid(79.77));
+        assertTrue(isAmountValid(1));
+        assertTrue(isAmountValid(0.01));
+
+        //testing values too low with valid decimals
+        assertFalse(isAmountValid(-9679756476693.89));
+        assertFalse(isAmountValid(-100));
+        assertFalse(isAmountValid(-9.82));
+        assertFalse(isAmountValid(-100));
+        assertFalse(isAmountValid(0));
+
+        //testing invalid decimal places positive and negative
+        assertFalse(isAmountValid(-.001));
+        assertFalse(isAmountValid(.001));
+        assertFalse(isAmountValid(-10.001));
+        assertFalse(isAmountValid(10.001));
+        assertFalse(isAmountValid(99809.859));
+
+    }
 
     @Test
     void constructorTest() {
