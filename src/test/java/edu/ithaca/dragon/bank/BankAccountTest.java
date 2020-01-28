@@ -26,14 +26,17 @@ class BankAccountTest {
         BankAccount bankAccount1 = new BankAccount("a@b.com", 200);
         bankAccount1.withdraw(100);
         assertEquals(100, bankAccount1.getBalance());
+        bankAccount1.withdraw(.01);
+        assertEquals(99.99, bankAccount1.getBalance());
 
         //0 edge case with positive balance
+        assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(1.005));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(0));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.01));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.000001));
 
         //0 edge case with 0 balance
-        bankAccount1.withdraw(100);
+        bankAccount1.withdraw(99.99);
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(0));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.01));
         assertThrows(IllegalArgumentException.class, () -> bankAccount1.withdraw(-.000001));
@@ -42,6 +45,7 @@ class BankAccountTest {
         //testing InsufficientFundsException
         BankAccount bankAccount2 = new BankAccount("a@b.com", 5);
         assertThrows(InsufficientFundsException.class, () -> bankAccount2.withdraw(10));
+        assertThrows(InsufficientFundsException.class, () -> bankAccount2.withdraw(5.01));
 
         bankAccount2.withdraw(5);
         assertThrows(InsufficientFundsException.class, () -> bankAccount2.withdraw(.01));
@@ -78,6 +82,7 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("ab@j.c")); //domain suffix too short,
         assertFalse(BankAccount.isEmailValid("ab@domain.c")); // domain suffix too short
         assertFalse(BankAccount.isEmailValid("ab#c#domain.com")); //invalid characters
+        assertFalse(BankAccount.isEmailValid("ab--c@domain.com")); //invalid characters
         assertFalse(BankAccount.isEmailValid("abc-@mail.com")); //breaks sequential special character rule
         assertFalse(BankAccount.isEmailValid("abc..def@mail.com")); //breaks sequential special character rule
         assertFalse(BankAccount.isEmailValid(".abc@mail.com")); //leading special character
@@ -86,7 +91,7 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("abc.def@mail*archive.com")); //invalid character
         assertFalse(BankAccount.isEmailValid("abc.def@mail")); //invalid domain
         assertFalse(BankAccount.isEmailValid("abc.def@mail..com")); //double special in domain
-        assertFalse(BankAccount.isEmailValid("abc@def.co-")); //ending in special chaaracter
+        assertFalse(BankAccount.isEmailValid("abc@def.co-")); //ending in special character
         assertFalse(BankAccount.isEmailValid("abc.b@c")); //@ on wrong side of last period
 
     }
