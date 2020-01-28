@@ -17,6 +17,8 @@ public class BankAccount {
         if (isEmailValid(email)) this.email = email;
         else throw new IllegalArgumentException("Email address: " + email + " is invalid, cannot create account");
 
+        if (startingBalance < 0) throw new IllegalArgumentException("Cannot open account with negative balance.");
+
         if (Math.round(startingBalance * 100.0) /100.0 == startingBalance)  this.balance = startingBalance;
         else throw new IllegalArgumentException("Invalid starting balance");
 
