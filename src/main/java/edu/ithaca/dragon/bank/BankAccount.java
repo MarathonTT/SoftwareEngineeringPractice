@@ -17,9 +17,7 @@ public class BankAccount {
         if (isEmailValid(email)) this.email = email;
         else throw new IllegalArgumentException("Email address: " + email + " is invalid, cannot create account");
 
-        if (startingBalance < 0) throw new IllegalArgumentException("Cannot open account with negative balance.");
-
-        if (Math.round(startingBalance * 100.0) /100.0 == startingBalance)  this.balance = startingBalance;
+        if (isAmountValid(startingBalance)) this.balance = startingBalance;
         else throw new IllegalArgumentException("Invalid starting balance");
 
     }
@@ -32,8 +30,9 @@ public class BankAccount {
         return email;
     }
 
-    public static boolean isAmountValid(double amount){
-        if (amount <= 0 || Math.round(amount * 100.0) / 100.0 != amount) return false;
+    public static boolean isAmountValid(Double amount){
+        if (amount < 0) return false;
+        if (Double.compare(amount, Math.round(amount * 100.0) / 100.0) != 0) return false;
         else return true;
     }
 
@@ -43,7 +42,7 @@ public class BankAccount {
      * if they withdraw more than their balance, throw an IllegalArgumentException
      */
     public void withdraw (double amount) throws InsufficientFundsException {
-
+        if (amount == 0) throw new IllegalArgumentException("Cannot withdraw 0 dollars.");
         if (!isAmountValid(amount)) throw new IllegalArgumentException("Invalid amount to withdraw.");
         if (balance >= amount) balance -= amount;
         else throw new InsufficientFundsException("Cannot draw more than account balance.");

@@ -12,8 +12,8 @@ class BankAccountTest {
 
     @Test
     void getBalanceTest() {
-        BankAccount bankAccount2 = new BankAccount("a@b.com", 0);
-        assertEquals(0, bankAccount2.getBalance());
+        BankAccount bankAccount2 = new BankAccount("a@b.com", 1);
+        assertEquals(1, bankAccount2.getBalance());
 
     }
     /*
@@ -82,7 +82,7 @@ class BankAccountTest {
         assertFalse(BankAccount.isEmailValid("ab.com@j")); //domain missing period
         assertFalse(BankAccount.isEmailValid("ab@j.c")); //domain suffix too short,
         assertFalse(BankAccount.isEmailValid("ab@domain.c")); // domain suffix too short
-        assertFalse(BankAccount.isEmailValid("ab#c#domain.com")); //invalid characters
+        assertFalse(BankAccount.isEmailValid("abc*domain.com")); //invalid characters
         assertFalse(BankAccount.isEmailValid("ab--c@domain.com")); //invalid characters
         assertFalse(BankAccount.isEmailValid("abc-@mail.com")); //breaks sequential special character rule
         assertFalse(BankAccount.isEmailValid("abc..def@mail.com")); //breaks sequential special character rule
@@ -105,17 +105,17 @@ class BankAccountTest {
     void isAmountValidTest() {
         //testing valid values with and without valid decimal places
         assertTrue(isAmountValid(9679756476693.89));
-        assertTrue(isAmountValid(100));
+        assertTrue(isAmountValid(100.0));
         assertTrue(isAmountValid(79.77));
-        assertTrue(isAmountValid(1));
+        assertTrue(isAmountValid(1.0));
         assertTrue(isAmountValid(0.01));
+        assertTrue(isAmountValid(0.0));
 
         //testing values too low with valid decimals
         assertFalse(isAmountValid(-9679756476693.89));
-        assertFalse(isAmountValid(-100));
+        assertFalse(isAmountValid(-100.0));
         assertFalse(isAmountValid(-9.82));
-        assertFalse(isAmountValid(-100));
-        assertFalse(isAmountValid(0));
+        assertFalse(isAmountValid(-100.0));
 
         //testing invalid decimal places positive and negative
         assertFalse(isAmountValid(-.001));
@@ -133,7 +133,7 @@ class BankAccountTest {
         assertEquals("a@b.com", bankAccount.getEmail());
         assertEquals(200, bankAccount.getBalance());
 
-        BankAccount bankAccount1 = new BankAccount("a@b.com", 0);
+        BankAccount bankAccount1 = new BankAccount("a@b.com", 1);
 
         //check for exception thrown correctly
         assertThrows(IllegalArgumentException.class, ()-> new BankAccount("", 100));
